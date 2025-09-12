@@ -1,0 +1,34 @@
+{
+  "name": "Toxic-MD ☣️",
+  "description": "⚡ A savage WhatsApp bot built to dominate chats with toxic style! Powered by Node.js for max chaos.",
+  "keywords": ["Toxic-MD", "WhatsApp Bot", "Multi-Device", "Savage"],
+  "repository": "https://github.com/Toxic-Master/Toxic-MD",
+  "stack": "container",
+  "env": {
+    "SESSION_ID": {
+      "description": "🔐 Your bot’s secret key. Use Pairing code or qr to get this or *Toxic-MD* won’t start! 😤",
+      "required": true,
+      "value": ""
+    },
+    "OWNER_NUMBER": {
+      "description": "📱 Your WhatsApp number (with country code, no +). Who’s runnin’ this show? 💪",
+      "required": true,
+      "value": "254735342808"
+    },
+    "OWNER_NAME": {
+      "description": "👑 Your name, the boss of *Toxic-MD*. Flex it in the bot’s credits! 😎",
+      "required": true,
+      "value": "Toxic-Master"
+    },
+    "PREFIX": {
+      "description": "🔠 Command trigger (e.g., ‘.’ for !ping). Keep it short or look like a clown! 🤡",
+      "required": true,
+      "value": "."
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}

@@ -1,2 +1,2 @@
-# Toxic-MD-Panel
-xD :)
+# Ultra-MD
+Light weight multidevice WhatsApp bot
