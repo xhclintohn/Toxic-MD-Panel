@@ -151,57 +151,72 @@ ${pushwish} @*${m.pushName}*! Tap a button to select a menu category:
 
       const messageOptions = {
         viewOnce: true,
-        buttons: [
+        text: mainMenu,
+        footer: `Pσɯҽɾҽԃ Ⴆყ Tσxιƈ-ɱԃȥ`,
+        title: `${toFancyFont("Toxic-MD")} Menu`,
+        buttonText: "Select a Category",
+        sections: [
           {
-            buttonId: `${prefix}download-menu`,
-            buttonText: { displayText: `📥 ${toFancyFont("Download")}` },
-            type: 1,
+            title: "🔥 Main Categories",
+            rows: [
+              {
+                title: `📥 ${toFancyFont("Download")}`,
+                description: "Access download-related commands",
+                rowId: `${prefix}download-menu`,
+              },
+              {
+                title: `🔄 ${toFancyFont("Converter")}`,
+                description: "Convert media and text",
+                rowId: `${prefix}converter-menu`,
+              },
+              {
+                title: `🤖 ${toFancyFont("AI")}`,
+                description: "AI-powered features",
+                rowId: `${prefix}ai-menu`,
+              },
+              {
+                title: `🛠 ${toFancyFont("Tools")}`,
+                description: "Utility tools",
+                rowId: `${prefix}tools-menu`,
+              },
+              {
+                title: `👥 ${toFancyFont("Group")}`,
+                description: "Group management commands",
+                rowId: `${prefix}group-menu`,
+              },
+            ],
           },
           {
-            buttonId: `${prefix}converter-menu`,
-            buttonText: { displayText: `🔄 ${toFancyFont("Converter")}` },
-            type: 1,
-          },
-          {
-            buttonId: `${prefix}ai-menu`,
-            buttonText: { displayText: `🤖 ${toFancyFont("AI")}` },
-            type: 1,
-          },
-          {
-            buttonId: `${prefix}tools-menu`,
-            buttonText: { displayText: `🛠 ${toFancyFont("Tools")}` },
-            type: 1,
-          },
-          {
-            buttonId: `${prefix}group-menu`,
-            buttonText: { displayText: `👥 ${toFancyFont("Group")}` },
-            type: 1,
-          },
-          {
-            buttonId: `${prefix}search-menu`,
-            buttonText: { displayText: `🔍 ${toFancyFont("Search")}` },
-            type: 1,
-          },
-          {
-            buttonId: `${prefix}main-menu`,
-            buttonText: { displayText: `⚙ ${toFancyFont("Main")}` },
-            type: 1,
-          },
-          {
-            buttonId: `${prefix}owner-menu`,
-            buttonText: { displayText: `🔒 ${toFancyFont("Owner")}` },
-            type: 1,
-          },
-          {
-            buttonId: `${prefix}stalk-menu`,
-            buttonText: { displayText: `🕵 ${toFancyFont("Stalk")}` },
-            type: 1,
+            title: "ℹ Additional Categories",
+            rows: [
+              {
+                title: `🔍 ${toFancyFont("Search")}`,
+                description: "Search the web and media",
+                rowId: `${prefix}search-menu`,
+              },
+              {
+                title: `⚙ ${toFancyFont("Main")}`,
+                description: "Core bot commands",
+                rowId: `${prefix}main-menu`,
+              },
+              {
+                title: `🔒 ${toFancyFont("Owner")}`,
+                description: "Owner-only commands",
+                rowId: `${prefix}owner-menu`,
+              },
+              {
+                title: `🕵 ${toFancyFont("Stalk")}`,
+                description: "Stalk user profiles",
+                rowId: `${prefix}stalk-menu`,
+              },
+            ],
           },
         ],
+        listType: 1, // Ensure grouped list rendering
         contextInfo: {
           mentionedJid: [m.sender],
           externalAdReply: {
-            showAdAttribution: true, // Marks as an ad
+            showAdAttribution: true,
             title: `${toFancyFont("Toxic-MD")} Menu`,
             body: `${pushwish} Explore Toxic-MD's features!`,
             sourceUrl: "https://github.com/xhclintohn/Toxic-MD",
@@ -220,7 +235,7 @@ ${pushwish} @*${m.pushName}*! Tap a button to select a menu category:
           { quoted: m }
         );
       } else {
-        await Matrix.sendMessage(m.from, { text: mainMenu, ...messageOptions }, { quoted: m });
+        await Matrix.sendMessage(m.from, { ...messageOptions }, { quoted: m });
       }
 
       // Send audio as a voice note
@@ -431,7 +446,7 @@ ${menuResponse}
             contextInfo: {
               mentionedJid: [m.sender],
               externalAdReply: {
-                showAdAttribution: true, // Marks as an ad
+                showAdAttribution: true,
                 title: `${toFancyFont("Toxic-MD")} ${toFancyFont(menuTitle)}`,
                 body: `Explore Toxic-MD's ${menuTitle.toLowerCase()} commands!`,
                 sourceUrl: "https://github.com/xhclintohn/Toxic-MD",
@@ -449,7 +464,7 @@ ${menuResponse}
           contextInfo: {
             mentionedJid: [m.sender],
             externalAdReply: {
-              showAdAttribution: true, // Marks as an ad
+              showAdAttribution: true,
               title: `${toFancyFont("Toxic-MD")} ${toFancyFont(menuTitle)}`,
               body: `Explore Toxic-MD's ${menuTitle.toLowerCase()} commands!`,
               sourceUrl: "https://github.com/xhclintohn/Toxic-MD",
