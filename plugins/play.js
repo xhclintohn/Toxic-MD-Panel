@@ -45,16 +45,18 @@ const play = async (m, Matrix) => {
       const safeTitle = song.title.replace(/[^\w\s]/gi, '').replace(/\s+/g, '_').substring(0, 100);
       const filePath = `${tmpDir}/${safeTitle}.mp3`;
 
-      // Fetch download URL from the new API
+      // Fetch download URL from the new API (api.privatezia.biz.id)
       let apiResponse;
       try {
-        const apiUrl = `https://apis.davidcyriltech.my.id/play?query=${encodeURIComponent(searchQuery)}`;
+        const apiUrl = `https://api.privatezia.biz.id/api/downloader/ytmp3?url=${encodeURIComponent(song.url)}`;
         apiResponse = await fetch(apiUrl);
         if (!apiResponse.ok) {
           throw new Error(`API responded with status: ${apiResponse.status}`);
         }
         const data = await apiResponse.json();
-        if (!data.status || !data.result.download_url) {
+        
+        // Check if API response is successful
+        if (!data.status || !data.result || !data.result.downloadUrl) {
           throw new Error('API response missing download URL or failed');
         }
 
@@ -63,16 +65,16 @@ const play = async (m, Matrix) => {
 ◈━━━━━━━━━━━━━━━━◈
 │❒ *Toxic-MD* Song Intel 🔥
 │❒ *Title*: ${data.result.title || song.title}
-│❒ *Views*: ${song.views.toLocaleString()}
-│❒ *Duration*: ${song.timestamp}
+│❒ *Quality*: ${data.result.quality || 'Unknown'}
+│❒ *Duration*: ${data.result.duration ? formatDuration(data.result.duration) : song.timestamp}
 │❒ *Channel*: ${song.author.name}
 │❒ *Uploaded*: ${song.ago}
-│❒ *URL*: ${data.result.video_url || song.url}
+│❒ *URL*: ${song.url}
 ◈━━━━━━━━━━━━━━━━◈`;
         await Matrix.sendMessage(m.from, { text: songInfo }, { quoted: m });
 
         // Download the audio file
-        const downloadResponse = await fetch(data.result.download_url);
+        const downloadResponse = await fetch(data.result.downloadUrl);
         if (!downloadResponse.ok) {
           throw new Error(`Failed to download audio: ${downloadResponse.status}`);
         }
@@ -82,7 +84,7 @@ const play = async (m, Matrix) => {
         console.error(`API error:`, apiError.message);
         return Matrix.sendMessage(m.from, {
           text: `◈━━━━━━━━━━━━━━━━◈
-│❒ *Toxic-MD* couldn't hit the API for "${song.title}". Server's actin' up! 😡
+│❒ *Toxic-MD* couldn't process "${song.title}". API error: ${apiError.message} 😡
 ◈━━━━━━━━━━━━━━━━◈`,
         }, { quoted: m });
       }
@@ -134,5 +136,12 @@ const play = async (m, Matrix) => {
     }, { quoted: m });
   }
 };
+
+// Helper function to format duration from seconds to MM:SS
+function formatDuration(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+}
 
 export default play;
