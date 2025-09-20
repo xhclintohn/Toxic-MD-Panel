@@ -1,6 +1,5 @@
 import moment from "moment-timezone";
 import fs from "fs";
-import os from "os";
 import pkg from "baileys-pro";
 const { generateWAMessageFromContent, proto } = pkg;
 import config from "../config.cjs";
@@ -29,60 +28,16 @@ if (time2 < "05:00:00") {
 // Fancy font utility
 function toFancyFont(text, isUpperCase = false) {
   const fonts = {
-    A: "𝘼",
-    B: "𝘽",
-    C: "𝘾",
-    D: "𝘿",
-    E: "𝙀",
-    F: "𝙁",
-    G: "𝙂",
-    H: "𝙃",
-    I: "𝙄",
-    J: "𝙅",
-    K: "𝙆",
-    L: "𝙇",
-    M: "𝙈",
-    N: "𝙉",
-    O: "𝙊",
-    P: "𝙋",
-    Q: "𝙌",
-    R: "𝙍",
-    S: "𝙎",
-    T: "𝙏",
-    U: "𝙐",
-    V: "𝙑",
-    W: "𝙒",
-    X: "𝙓",
-    Y: "𝙔",
-    Z: "𝙕",
-    a: "𝙖",
-    b: "𝙗",
-    c: "𝙘",
-    d: "𝙙",
-    e: "𝙚",
-    f: "𝙛",
-    g: "𝙜",
-    h: "𝙝",
-    i: "𝙞",
-    j: "𝙟",
-    k: "𝙠",
-    l: "𝙡",
-    m: "𝙢",
-    n: "𝙣",
-    o: "𝙤",
-    p: "𝙥",
-    q: "𝙦",
-    r: "𝙧",
-    s: "𝙨",
-    t: "𝙩",
-    u: "𝙪",
-    v: "𝙫",
-    w: "𝙬",
-    x: "𝙭",
-    y: "𝙮",
-    z: "𝙯",
+    A: "𝘼", B: "𝘽", C: "𝘾", D: "𝘿", E: "𝙀", F: "𝙁", G: "𝙂", H: "𝙃", 
+    I: "𝙄", J: "𝙅", K: "𝙆", L: "𝙇", M: "𝙈", N: "𝙉", O: "𝙊", P: "𝙋", 
+    Q: "𝙌", R: "𝙍", S: "𝙎", T: "𝙏", U: "𝙐", V: "𝙑", W: "𝙒", X: "𝙓", 
+    Y: "𝙔", Z: "𝙕", a: "𝙖", b: "𝙗", c: "𝙘", d: "𝙙", e: "𝙚", f: "𝙛", 
+    g: "𝙜", h: "𝙝", i: "𝙞", j: "𝙟", k: "𝙠", l: "𝙡", m: "𝙢", n: "𝙣", 
+    o: "𝙤", p: "𝙥", q: "𝙦", r: "𝙧", s: "𝙨", t: "𝙩", u: "𝙪", v: "𝙫", 
+    w: "𝙬", x: "𝙭", y: "𝙮", z: "𝙯"
   };
-  const formattedText = isUpperCase ? text.toUpperCase() : text.toLowerCase();
+  
+  const formattedText = isUpperCase ? text.toUpperCase() : text;
   return formattedText
     .split("")
     .map((char) => fonts[char] || char)
@@ -92,47 +47,32 @@ function toFancyFont(text, isUpperCase = false) {
 // Image fetch utility
 async function fetchMenuImage() {
   const imageUrl = "https://files.catbox.moe/y2utve.jpg";
-  for (let i = 0; i < 3; i++) {
-    try {
-      const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
-      return Buffer.from(response.data, "binary");
-    } catch (error) {
-      if (error.response?.status === 429 && i < 2) {
-        console.log(`Rate limit hit, retrying in 2s...`);
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        continue;
-      }
-      console.error("❌ Failed to fetch image:", error);
-      return null;
-    }
+  try {
+    const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
+    return Buffer.from(response.data, "binary");
+  } catch (error) {
+    console.error("❌ Failed to fetch image:", error.message);
+    return null;
   }
 }
 
 const menu = async (m, Matrix) => {
   try {
-    const prefix = config.PREFIX;
-    const cmd = m.body.startsWith(prefix) ? m.body.slice(prefix.length).split(" ")[0].toLowerCase() : "";
+    const prefix = config.PREFIX || ".";
+    const body = m.body || "";
+    const cmd = body.startsWith(prefix) ? body.slice(prefix.length).split(" ")[0].toLowerCase() : "";
     const mode = config.MODE === "public" ? "public" : "private";
     const totalCommands = 70;
 
     const validCommands = ["list", "help", "menu"];
     const subMenuCommands = [
-      "download-menu",
-      "converter-menu",
-      "ai-menu",
-      "tools-menu",
-      "group-menu",
-      "search-menu",
-      "main-menu",
-      "owner-menu",
-      "stalk-menu",
+      "download-menu", "converter-menu", "ai-menu", "tools-menu", 
+      "group-menu", "search-menu", "main-menu", "owner-menu", "stalk-menu"
     ];
 
-    // Fetch image for all cases
-    const menuImage = await fetchMenuImage();
-
-    // Handle main menu
+    // Handle main menu commands
     if (validCommands.includes(cmd)) {
+      const menuImage = await fetchMenuImage();
       const mainMenu = `
 ◈━━━━━━━━━━━━━━━━◈
 │❒ ${toFancyFont("Toxic-MD")} Command Menu ⚠
@@ -144,112 +84,56 @@ const menu = async (m, Matrix) => {
 │ 📚 *${toFancyFont("Library")}*: Baileys
 ◈━━━━━━━━━━━━━━━━◈
 
-${pushwish} @*${m.pushName}*! Tap a button to select a menu category:
+${pushwish} @${m.pushName || 'User'}! Tap a button to select a menu category:
 
 > Pσɯҽɾҽԃ Ⴆყ Tσxιƈ-ɱԃȥ
 `;
 
-      const messageOptions = {
-        viewOnce: true,
+      const message = {
         text: mainMenu,
-        footer: `Pσɯҽɾҽԃ Ⴆყ Tσxιƈ-ɱԃȥ`,
+        footer: "Pσɯҽɾҽԃ Ⴆყ Tσxιƈ-ɱԃȥ",
         title: `${toFancyFont("Toxic-MD")} Menu`,
-        buttonText: "Select a Category",
-        sections: [
-          {
-            title: "🔥 Main Categories",
-            rows: [
-              {
-                title: `📥 ${toFancyFont("Download")}`,
-                description: "Access download-related commands",
-                rowId: `${prefix}download-menu`,
-              },
-              {
-                title: `🔄 ${toFancyFont("Converter")}`,
-                description: "Convert media and text",
-                rowId: `${prefix}converter-menu`,
-              },
-              {
-                title: `🤖 ${toFancyFont("AI")}`,
-                description: "AI-powered features",
-                rowId: `${prefix}ai-menu`,
-              },
-              {
-                title: `🛠 ${toFancyFont("Tools")}`,
-                description: "Utility tools",
-                rowId: `${prefix}tools-menu`,
-              },
-              {
-                title: `👥 ${toFancyFont("Group")}`,
-                description: "Group management commands",
-                rowId: `${prefix}group-menu`,
-              },
-            ],
-          },
-          {
-            title: "ℹ Additional Categories",
-            rows: [
-              {
-                title: `🔍 ${toFancyFont("Search")}`,
-                description: "Search the web and media",
-                rowId: `${prefix}search-menu`,
-              },
-              {
-                title: `⚙ ${toFancyFont("Main")}`,
-                description: "Core bot commands",
-                rowId: `${prefix}main-menu`,
-              },
-              {
-                title: `🔒 ${toFancyFont("Owner")}`,
-                description: "Owner-only commands",
-                rowId: `${prefix}owner-menu`,
-              },
-              {
-                title: `🕵 ${toFancyFont("Stalk")}`,
-                description: "Stalk user profiles",
-                rowId: `${prefix}stalk-menu`,
-              },
-            ],
-          },
+        buttons: [
+          { buttonId: `${prefix}download-menu`, buttonText: { displayText: "📥 Download" }, type: 1 },
+          { buttonId: `${prefix}converter-menu`, buttonText: { displayText: "🔄 Converter" }, type: 1 },
+          { buttonId: `${prefix}ai-menu`, buttonText: { displayText: "🤖 AI" }, type: 1 },
+          { buttonId: `${prefix}tools-menu`, buttonText: { displayText: "🛠 Tools" }, type: 1 },
+          { buttonId: `${prefix}group-menu`, buttonText: { displayText: "👥 Group" }, type: 1 },
+          { buttonId: `${prefix}search-menu`, buttonText: { displayText: "🔍 Search" }, type: 1 },
+          { buttonId: `${prefix}main-menu`, buttonText: { displayText: "⚙ Main" }, type: 1 },
+          { buttonId: `${prefix}owner-menu`, buttonText: { displayText: "🔒 Owner" }, type: 1 },
+          { buttonId: `${prefix}stalk-menu`, buttonText: { displayText: "🕵 Stalk" }, type: 1 }
         ],
-        listType: 1, // Ensure grouped list rendering
+        headerType: 1,
+        mentions: [m.sender],
         contextInfo: {
-          mentionedJid: [m.sender],
           externalAdReply: {
-            showAdAttribution: true,
             title: `${toFancyFont("Toxic-MD")} Menu`,
             body: `${pushwish} Explore Toxic-MD's features!`,
+            thumbnail: menuImage || Buffer.alloc(0),
             sourceUrl: "https://github.com/xhclintohn/Toxic-MD",
-            mediaType: 1,
-            renderLargerThumbnail: true,
-            mediaUrl: "https://files.catbox.moe/zaqn1j.jpg",
-          },
-        },
+            mediaType: 1
+          }
+        }
       };
 
-      // Send menu with or without image
       if (menuImage) {
-        await Matrix.sendMessage(
-          m.from,
-          { image: menuImage, caption: mainMenu, ...messageOptions },
-          { quoted: m }
-        );
+        await Matrix.sendMessage(m.from, { 
+          image: menuImage, 
+          caption: mainMenu,
+          ...message 
+        }, { quoted: m });
       } else {
-        await Matrix.sendMessage(m.from, { ...messageOptions }, { quoted: m });
+        await Matrix.sendMessage(m.from, message, { quoted: m });
       }
 
-      // Send audio as a voice note
-      await Matrix.sendMessage(
-        m.from,
-        { audio: { url: "https://files.catbox.moe/f4zaz4.mp3" }, mimetype: "audio/mp4", ptt: true },
-        { quoted: m }
-      );
+      return;
     }
 
     // Handle sub-menu commands
     if (subMenuCommands.includes(cmd)) {
-      let menuTitle;
-      let menuResponse;
+      let menuTitle = "";
+      let menuResponse = "";
 
       switch (cmd) {
         case "download-menu":
@@ -420,13 +304,12 @@ ${pushwish} @*${m.pushName}*! Tap a button to select a menu category:
           return;
       }
 
-      // Format the full response
       const fullResponse = `
 ◈━━━━━━━━━━━━━━━━◈
 │❒ ${toFancyFont("Toxic-MD")} - ${toFancyFont(menuTitle)} ⚠
 │
 │ 🤖 *${toFancyFont("Bot")}*: ${toFancyFont("Toxic-MD")}
-│ 👤 *${toFancyFont("User")}*: ${m.pushName}
+│ 👤 *${toFancyFont("User")}*: ${m.pushName || 'User'}
 │ 🔣 *${toFancyFont("Prefix")}*: ${prefix}
 │ 📚 *${toFancyFont("Library")}*: Baileys
 ◈━━━━━━━━━━━━━━━━◈
@@ -436,44 +319,18 @@ ${menuResponse}
 > Pσɯҽɾҽԃ Ⴆყ Tσxιƈ-ɱԃȥ
 `;
 
-      // Send sub-menu with or without image
-      if (menuImage) {
-        await Matrix.sendMessage(
-          m.from,
-          {
-            image: menuImage,
-            caption: fullResponse,
-            contextInfo: {
-              mentionedJid: [m.sender],
-              externalAdReply: {
-                showAdAttribution: true,
-                title: `${toFancyFont("Toxic-MD")} ${toFancyFont(menuTitle)}`,
-                body: `Explore Toxic-MD's ${menuTitle.toLowerCase()} commands!`,
-                sourceUrl: "https://github.com/xhclintohn/Toxic-MD",
-                mediaType: 1,
-                renderLargerThumbnail: true,
-                mediaUrl: "https://files.catbox.moe/zaqn1j.jpg",
-              },
-            },
-          },
-          { quoted: m }
-        );
-      } else {
-        await Matrix.sendMessage(m.from, {
-          text: fullResponse,
-          contextInfo: {
-            mentionedJid: [m.sender],
-            externalAdReply: {
-              showAdAttribution: true,
-              title: `${toFancyFont("Toxic-MD")} ${toFancyFont(menuTitle)}`,
-              body: `Explore Toxic-MD's ${menuTitle.toLowerCase()} commands!`,
-              sourceUrl: "https://github.com/xhclintohn/Toxic-MD",
-              mediaType: 1,
-              renderLargerThumbnail: true,
-            },
-          },
-        }, { quoted: m });
-      }
+      await Matrix.sendMessage(m.from, { 
+        text: fullResponse,
+        contextInfo: {
+          mentionedJid: [m.sender],
+          externalAdReply: {
+            title: `${toFancyFont("Toxic-MD")} ${toFancyFont(menuTitle)}`,
+            body: `Explore Toxic-MD's ${menuTitle.toLowerCase()} commands!`,
+            sourceUrl: "https://github.com/xhclintohn/Toxic-MD",
+            mediaType: 1
+          }
+        }
+      }, { quoted: m });
     }
   } catch (error) {
     console.error(`❌ Menu error: ${error.message}`);
